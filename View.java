@@ -18,20 +18,25 @@ public class View extends Frame implements ActionListener {
 	private TextArea game[] = new TextArea[7];
 	private Choice destination[] = new Choice[7];
 	private Button save = new Button("Speichern");
-	public Label status = new Label("Konfiguration");
+	private Button send = new Button("Abrufen/Senden");
+	public TextArea status = new TextArea(3, 20);
 
-	View(Controller _controller) {
+	public View(Controller _controller) {
 		super("DEL-Scores zu vMix");
 		this.controller = _controller;
 
 		Panel panelNorth = new Panel();
-		panelNorth.setLayout(new GridLayout(2, 2));
+		panelNorth.setLayout(new GridLayout(3, 2));
 		panelNorth.add(new Label("vMix IP-Adresse und Port: "));
 		vMixIP_TF = new TextField(30);
 		panelNorth.add(vMixIP_TF);
+		vMixIP_TF.setText("172.16.6.149:8088");
 		panelNorth.add(new Label("Nummer des ersten Inputs: "));
 		vMixFirstInput_TF = new TextField(10);
 		panelNorth.add(vMixFirstInput_TF);
+		vMixFirstInput_TF.setText("2");
+		panelNorth.add(save);
+		save.addActionListener(this);
 		this.add("North", panelNorth);
 
 		Panel panelSouth = new Panel();
@@ -50,9 +55,10 @@ public class View extends Frame implements ActionListener {
 			panelSouth.add(game[i]);
 			panelSouth.add(destination[i]);
 		}
-		panelSouth.add(save);
-		save.addActionListener(this);
+		panelSouth.add(send);
+		send.addActionListener(this);
 		panelSouth.add(status);
+		status.setEditable(false);
 		this.add("South", panelSouth);
 
 		this.addWindowListener(new MyWindowAdapter());
@@ -61,27 +67,23 @@ public class View extends Frame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (save == e.getSource()) {
-			controller.newModel(vMixIP_TF.getText(),
-					Integer.parseInt(vMixFirstInput_TF.getText()));
+			controller.setIpAdress(vMixIP_TF.getText());
+			controller.setFirstInput(Integer.parseInt(vMixFirstInput_TF.getText()));
+		} else if (send == e.getSource()) {
+			controller.getData();
+			controller.sendData();
 		}
 	}
 
-	public void setData(String[] _names, String[] _scores, String[] _time) {
+	public void setData(String[][] _names, String[][] _scores, String[] _time) {
 		for (int i = 0; i < _time.length; i++) {
-			if (i == 0) {
-				game[i].setText(_names[i].replaceAll("%20", " ") + "-"
-						+ _names[i + 1].replaceAll("%20", " ") + "\n"
-						+ _scores[i] + ":" + _scores[i + 1] + "\n"
-						+ _time[i].replaceAll("%20", " "));
-			} else { // same as above
-				game[i].setText(_names[i + i].replaceAll("%20", " ") + "-"
-						+ _names[i + i + 1].replaceAll("%20", " ") + "\n"
-						+ _scores[i + i] + ":" + _scores[i + i + 1] + "\n"
-						+ _time[i].replaceAll("%20", " "));
-			}
+			game[i].setText(_names[i][0].replaceAll("%20", " ") + "-"
+					+ _names[i][1].replaceAll("%20", " ") + "\n"
+					+ _scores[i][0] + ":" + _scores[i][1] + "\n"
+					+ _time[i].replaceAll("%20", " "));
 		}
 	}
-	
+
 	public int[] getDestination (String _TeamHome) {
 		int[] returnDestination = new int[2];
 		for (int i=0; i<7; i++) {
