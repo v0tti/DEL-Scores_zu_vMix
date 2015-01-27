@@ -1,4 +1,5 @@
 import java.awt.Button;
+import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.Frame;
 import java.awt.GridLayout;
@@ -19,10 +20,11 @@ public class View extends Frame implements ActionListener {
 	private Choice destination[] = new Choice[7];
 	private Button save = new Button("Speichern");
 	private Button send = new Button("Abrufen/Senden");
-	public TextArea status = new TextArea(3, 20);
+	private TextArea status = new TextArea(3, 20);
+	private Checkbox automaticUpload = new Checkbox("Automatischer Upload (Beta)", false);
 
 	public View(Controller _controller) {
-		super("DEL-Scores zu vMix");
+		super("DEL-Scores zu vMix 1.1.");
 		this.controller = _controller;
 
 		Panel panelNorth = new Panel();
@@ -35,6 +37,7 @@ public class View extends Frame implements ActionListener {
 		vMixFirstInput_TF = new TextField(10);
 		panelNorth.add(vMixFirstInput_TF);
 		vMixFirstInput_TF.setText("2");
+		panelNorth.add(automaticUpload);
 		panelNorth.add(save);
 		save.addActionListener(this);
 		this.add("North", panelNorth);
@@ -67,14 +70,21 @@ public class View extends Frame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (save == e.getSource()) {
-			controller.setIpAdress(vMixIP_TF.getText());
+			controller.setIpAddress(vMixIP_TF.getText());
 			controller.setFirstInput(Integer.parseInt(vMixFirstInput_TF.getText()));
+			controller.enableAutomaticUpload(automaticUpload.getState());
 		} else if (send == e.getSource()) {
 			controller.getData();
 			controller.sendData();
 		}
 	}
 
+	/**
+	 * Sets the given data of matches to the GUI.
+	 * @param _names two dimensional String array where the names of the teams are stored
+	 * @param _scores tow dimensional String array where the score is stored
+	 * @param _time one dimensional String array where the current time of the match is stored
+	 */
 	public void setData(String[][] _names, String[][] _scores, String[] _time) {
 		for (int i = 0; i < _time.length; i++) {
 			game[i].setText(_names[i][0].replaceAll("%20", " ") + "-"
@@ -84,6 +94,11 @@ public class View extends Frame implements ActionListener {
 		}
 	}
 
+	/**
+	 * Takes the name of a home team and gives back an Array with the destination of the match.
+	 * @param _TeamHome the Name of the home team
+	 * @return Two-Dimensional Integer-Array where Index 0 is the Input (1, 2 or 3) and Index 1 is the row (1 or 2).
+	 */
 	public int[] getDestination (String _TeamHome) {
 		int[] returnDestination = new int[2];
 		for (int i=0; i<7; i++) {
@@ -131,6 +146,13 @@ public class View extends Frame implements ActionListener {
 		return null;
 	}
 
+	/**
+	 * Appends the status log with the given String.
+	 * @param _status Sting of the status-message
+	 */
+	public void setStatus(String _status) {
+		status.append("\n" + _status);
+	}
 }
 
 class MyWindowAdapter extends WindowAdapter {

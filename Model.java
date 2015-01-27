@@ -13,14 +13,14 @@ public class Model {
 	private String[][] scoresData;
 	private String[] timeData;
 
-	public void loadData() throws IOException {
+	public void loadData() throws IOException { 
 		String url = "http://www.del.org/de/statistiken/livescores/page/260----.html";
 		Document doc = Jsoup.connect(url).get();
 		Elements names = doc.select(".team .wappen");
 		Elements scores = doc.select(".team span");
 		Elements time = doc.select("span.time");
 		Date date = new Date();
-		
+
 		System.out.println(date.toString());
 		System.out.println("Anzahl Spiele: " + time.size() + "\n");
 		namesData = new String[names.size()/2][2];
@@ -42,11 +42,11 @@ public class Model {
 			System.out.println(timeData[i].replaceAll("%20", " ") + "\n"); //Print time
 		}
 	}
-	
+
 	public String[][] getNames() {
 		return namesData;
 	}
-	
+
 	public String[][] getScores() {
 		return scoresData;
 	}
