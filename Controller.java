@@ -15,7 +15,7 @@ public class Controller {
 	private String[] timeData;
 	private String vMixIP = "172.16.6.149:8088";
 	private int firstInput = 2;
-	private automaticUploader myAutomaticUploader = new automaticUploader(this);
+	private AutomaticUploader myAutomaticUploader;
 
 	public Controller() {
 		myModel = new Model();
@@ -24,7 +24,6 @@ public class Controller {
 		myGUI.setResizable(false);
 		myGUI.setVisible(true);
 		getData();
-		myAutomaticUploader.run();
 	}
 
 	/**
@@ -75,9 +74,10 @@ public class Controller {
 
 	public void enableAutomaticUpload(boolean enable) {
 		if (enable) {
-			myAutomaticUploader.enableUploader(true);
+			myAutomaticUploader = new AutomaticUploader(this);
+			myAutomaticUploader.start();
 		} else {
-			myAutomaticUploader.enableUploader(false);
+			myAutomaticUploader.interrupt();
 		}
 	}
 

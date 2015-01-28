@@ -9,10 +9,12 @@ import java.awt.TextArea;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class View extends Frame implements ActionListener {
+public class View extends Frame implements ActionListener, ItemListener {
 
 	private Controller controller;
 	private TextField vMixIP_TF, vMixFirstInput_TF;
@@ -24,7 +26,7 @@ public class View extends Frame implements ActionListener {
 	private Checkbox automaticUpload = new Checkbox("Automatischer Upload (Beta)", false);
 
 	public View(Controller _controller) {
-		super("DEL-Scores zu vMix 1.1.");
+		super("DEL-Scores zu vMix 1.2.");
 		this.controller = _controller;
 
 		Panel panelNorth = new Panel();
@@ -38,6 +40,7 @@ public class View extends Frame implements ActionListener {
 		panelNorth.add(vMixFirstInput_TF);
 		vMixFirstInput_TF.setText("2");
 		panelNorth.add(automaticUpload);
+		automaticUpload.addItemListener(this);
 		panelNorth.add(save);
 		save.addActionListener(this);
 		this.add("North", panelNorth);
@@ -72,11 +75,14 @@ public class View extends Frame implements ActionListener {
 		if (save == e.getSource()) {
 			controller.setIpAddress(vMixIP_TF.getText());
 			controller.setFirstInput(Integer.parseInt(vMixFirstInput_TF.getText()));
-			controller.enableAutomaticUpload(automaticUpload.getState());
 		} else if (send == e.getSource()) {
 			controller.getData();
 			controller.sendData();
 		}
+	}
+	
+	public void itemStateChanged(ItemEvent e) {
+		controller.enableAutomaticUpload(automaticUpload.getState());
 	}
 
 	/**
