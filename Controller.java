@@ -53,7 +53,7 @@ public class Controller {
 		namesData = myModel.getNames();
 		scoresData = myModel.getScores();
 		timeData = myModel.getTime();
-		myGUI.setStatus("Daten erfolgreich abgerufen");
+		myGUI.setStatus("Daten abgerufen");
 		myGUI.setData(namesData, scoresData, timeData);
 	}
 
@@ -74,7 +74,7 @@ public class Controller {
 
 	public void enableAutomaticUpload(boolean enable) {
 		if (enable) {
-			myAutomaticUploader = new AutomaticUploader(this);
+			myAutomaticUploader = new AutomaticUploader(this, myGUI);
 			myAutomaticUploader.start();
 		} else {
 			myAutomaticUploader.interrupt();
@@ -87,7 +87,7 @@ public class Controller {
 		myModel.sendToVmix("http://" + vMixIP + "/api/?Function=setText&Input=" + (firstInput
 				+ title[0] - 1) + "&SelectedName=Gast_" + title[1] + "&Value=" + scoreAway);
 		myModel.sendToVmix("http://" + vMixIP + "/api/?Function=setText&Input=" + (firstInput
-				+ title[0] - 1) + "&SelectedName=Zeitpunkt_" + title[1] + "&Value=" + time);
+				+ title[0] - 1) + "&SelectedName=Zeit_" + title[1] + "&Value=" + time);
 	}
 
 }

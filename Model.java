@@ -12,6 +12,7 @@ public class Model {
 	private String[][] namesData;
 	private String[][] scoresData;
 	private String[] timeData;
+	private MatchSort sorter = new MatchSort();
 
 	public void loadData() throws IOException { 
 		String url = "http://www.del.org/de/statistiken/livescores/page/260----.html";
@@ -41,18 +42,19 @@ public class Model {
 			timeData[i] = time.eq(i).text().replaceAll("\\s", "%20"); //Get time String of the home club and replace blanks
 			System.out.println(timeData[i].replaceAll("%20", " ") + "\n"); //Print time
 		}
+		sorter.sortData(namesData,  scoresData, timeData);
 	}
 
 	public String[][] getNames() {
-		return namesData;
+		return sorter.getSortedNames();
 	}
 
 	public String[][] getScores() {
-		return scoresData;
+		return sorter.getSortedScores();
 	}
 
 	public String[] getTime() {
-		return timeData;
+		return sorter.getSortedTime();
 	}
 
 	public void sendToVmix(String vmixAPI) throws IOException {
@@ -60,6 +62,6 @@ public class Model {
 		URL vmixURL = new URL(vmixAPI);
 		HttpURLConnection vmixCon = (HttpURLConnection) vmixURL
 				.openConnection();
-		vmixCon.getResponseMessage();
+		System.out.println(vmixCon.getResponseMessage());
 	}
 }

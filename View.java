@@ -23,24 +23,24 @@ public class View extends Frame implements ActionListener, ItemListener {
 	private Button save = new Button("Speichern");
 	private Button send = new Button("Abrufen/Senden");
 	private TextArea status = new TextArea(3, 20);
-	private Checkbox automaticUpload = new Checkbox("Automatischer Upload (Beta)", false);
+	private Checkbox automaticUpload = new Checkbox("Automatischer Upload", false);
 
 	public View(Controller _controller) {
-		super("DEL-Scores zu vMix 1.2.");
+		super("DEL-Scores zu vMix 1.4.");
 		this.controller = _controller;
 
 		Panel panelNorth = new Panel();
 		panelNorth.setLayout(new GridLayout(3, 2));
-		panelNorth.add(new Label("vMix IP-Adresse und Port: "));
+		panelNorth.add(new Label("vMix IP-Adresse und Port: ")); //vMix IP-Adress and Port
 		vMixIP_TF = new TextField(30);
 		panelNorth.add(vMixIP_TF);
-		vMixIP_TF.setText("172.16.6.149:8088");
-		panelNorth.add(new Label("Nummer des ersten Inputs: "));
+		vMixIP_TF.setText("127.0.0.1:8088"); //set default IP to localhost
+		panelNorth.add(new Label("Nummer des ersten Inputs: ")); //Number of the first Input
 		vMixFirstInput_TF = new TextField(10);
 		panelNorth.add(vMixFirstInput_TF);
-		vMixFirstInput_TF.setText("2");
+		vMixFirstInput_TF.setText("2"); //set default to two (Standart in the WildWings-Preset)
 		panelNorth.add(automaticUpload);
-		automaticUpload.addItemListener(this);
+		automaticUpload.addItemListener(this); //listen if button changes
 		panelNorth.add(save);
 		save.addActionListener(this);
 		this.add("North", panelNorth);
@@ -51,13 +51,13 @@ public class View extends Frame implements ActionListener, ItemListener {
 			game[i] = new TextArea(3, 20);
 			game[i].setEditable(false);
 			destination[i] = new Choice();
-			destination[i].add("-");
-			destination[i].add("1.1");
-			destination[i].add("1.2");
-			destination[i].add("2.1");
-			destination[i].add("2.2");
-			destination[i].add("3.1");
-			destination[i].add("3.2");
+			destination[i].add("-"); //do not asign this match to a title
+			destination[i].add("1.1."); //asign to title 1, row 1
+			destination[i].add("1.2."); //asign to title 1, row 2
+			destination[i].add("2.1."); //asign to title 2, row 1
+			destination[i].add("2.2."); //asign to title 2, row 2
+			destination[i].add("3.1."); //asign to title 3, row 1
+			destination[i].add("3.2."); //asign to title 3, row 2
 			panelSouth.add(game[i]);
 			panelSouth.add(destination[i]);
 		}
@@ -113,32 +113,32 @@ public class View extends Frame implements ActionListener, ItemListener {
 				case 1:
 					returnDestination[0] = 1;
 					returnDestination[1] = 1;
-					System.out.println("1.1");
+					System.out.println("1.1.");
 					break;
 				case 2:
 					returnDestination[0] = 1;
 					returnDestination[1] = 2;
-					System.out.println("1.2");
+					System.out.println("1.2.");
 					break;
 				case 3:
 					returnDestination[0] = 2;
 					returnDestination[1] = 1;
-					System.out.println("2.1");
+					System.out.println("2.1.");
 					break;
 				case 4:
 					returnDestination[0] = 2;
 					returnDestination[1] = 2;
-					System.out.println("2.2");
+					System.out.println("2.2.");
 					break;
 				case 5:
 					returnDestination[0] = 3;
 					returnDestination[1] = 1;
-					System.out.println("3.1");
+					System.out.println("3.1.");
 					break;
 				case 6:
 					returnDestination[0] = 3;
 					returnDestination[1] = 2;
-					System.out.println("3.2");
+					System.out.println("3.2.");
 					break;
 				default:
 					returnDestination[0] = 0;
