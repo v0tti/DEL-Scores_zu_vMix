@@ -18,24 +18,24 @@ public class View extends Frame implements ActionListener, ItemListener {
 
 	private Controller controller;
 	private TextField vMixIP_TF, vMixFirstInput_TF;
-	private TextArea game[] = new TextArea[7];
-	private Choice destination[] = new Choice[7];
 	private Button save = new Button("Speichern");
 	private Button send = new Button("Abrufen/Senden");
+	private Label destination[] = new Label[6];
+	private Choice matchselect[] = new Choice[6];
 	private TextArea status = new TextArea(3, 20);
 	private Checkbox automaticUpload = new Checkbox("Automatischer Upload", false);
 
 	public View(Controller _controller) {
-		super("DEL-Scores zu vMix 1.4.");
+		super("DEL-Scores zu vMix 2.0.");
 		this.controller = _controller;
 
 		Panel panelNorth = new Panel();
 		panelNorth.setLayout(new GridLayout(3, 2));
-		panelNorth.add(new Label("vMix IP-Adresse und Port: ")); //vMix IP-Adress and Port
+		panelNorth.add(new Label("vMix IP-Adresse:Port ", Label.RIGHT)); //vMix IP-Adress and Port
 		vMixIP_TF = new TextField(30);
 		panelNorth.add(vMixIP_TF);
 		vMixIP_TF.setText("127.0.0.1:8088"); //set default IP to localhost
-		panelNorth.add(new Label("Nummer des ersten Inputs: ")); //Number of the first Input
+		panelNorth.add(new Label("Erste Input-Nr ", Label.RIGHT)); //Number of the first Input
 		vMixFirstInput_TF = new TextField(10);
 		panelNorth.add(vMixFirstInput_TF);
 		vMixFirstInput_TF.setText("2"); //set default to two (Standart in the WildWings-Preset)
@@ -45,22 +45,23 @@ public class View extends Frame implements ActionListener, ItemListener {
 		save.addActionListener(this);
 		this.add("North", panelNorth);
 
-		Panel panelSouth = new Panel();
-		panelSouth.setLayout(new GridLayout(8, 2));
-		for (int i = 0; i < 7; i++) {
-			game[i] = new TextArea(3, 20);
-			game[i].setEditable(false);
-			destination[i] = new Choice();
-			destination[i].add("-"); //do not asign this match to a title
-			destination[i].add("1.1."); //asign to title 1, row 1
-			destination[i].add("1.2."); //asign to title 1, row 2
-			destination[i].add("2.1."); //asign to title 2, row 1
-			destination[i].add("2.2."); //asign to title 2, row 2
-			destination[i].add("3.1."); //asign to title 3, row 1
-			destination[i].add("3.2."); //asign to title 3, row 2
-			panelSouth.add(game[i]);
-			panelSouth.add(destination[i]);
+		Panel panelCenter = new Panel();
+		panelCenter.setLayout(new GridLayout(6, 2));
+		destination[0] = new Label("Maske 1, Zeile 1", Label.RIGHT);
+		destination[1] = new Label("Maske 1, Zeile 2", Label.RIGHT);
+		destination[2] = new Label("Maske 2, Zeile 1", Label.RIGHT);
+		destination[3] = new Label("Maske 2, Zeile 2", Label.RIGHT);
+		destination[4] = new Label("Maske 3, Zeile 1", Label.RIGHT);
+		destination[5] = new Label("Maske 3, Zeile 2", Label.RIGHT);
+		for (int i = 0; i<6; i++) {
+			panelCenter.add(destination[i]);
+			matchselect[i] = new Choice();
+			panelCenter.add(matchselect[i]);
 		}
+		this.add("Center", panelCenter);
+
+		Panel panelSouth = new Panel();
+		panelSouth.setLayout(new GridLayout(2, 1));
 		panelSouth.add(send);
 		send.addActionListener(this);
 		panelSouth.add(status);
@@ -80,7 +81,7 @@ public class View extends Frame implements ActionListener, ItemListener {
 			controller.sendData();
 		}
 	}
-	
+
 	public void itemStateChanged(ItemEvent e) {
 		controller.enableAutomaticUpload(automaticUpload.getState());
 	}
@@ -92,64 +93,73 @@ public class View extends Frame implements ActionListener, ItemListener {
 	 * @param _time one dimensional String array where the current time of the match is stored
 	 */
 	public void setData(String[][] _names, String[][] _scores, String[] _time) {
-		for (int i = 0; i < _time.length; i++) {
-			game[i].setText(_names[i][0].replaceAll("%20", " ") + "-"
-					+ _names[i][1].replaceAll("%20", " ") + "\n"
-					+ _scores[i][0] + ":" + _scores[i][1] + "\n"
-					+ _time[i].replaceAll("%20", " "));
+		for (int j = 0; j < 6; j++) {
+			String selectedItem = matchselect[j].getSelectedItem();
+			matchselect[j].removeAll();
+
+			matchselect[j].add("-       ");
+			for (int i = 0; i < _time.length; i++) {
+				matchselect[j].add(_names[i][0] + " - " + _names[i][1] + " (" + _scores[i][0] + ":" + _scores[i][1] + ")");
+
+				if (selectedItem!=null && matchselect[j].getItem(i).startsWith(selectedItem.substring(0, 8))) {
+					matchselect[j].select(i);
+				}
+			}
+
 		}
 	}
 
-	/**
-	 * Takes the name of a home team and gives back an Array with the destination of the match.
-	 * @param _TeamHome the Name of the home team
-	 * @return Two-Dimensional Integer-Array where Index 0 is the Input (1, 2 or 3) and Index 1 is the row (1 or 2).
-	 */
-	public int[] getDestination (String _TeamHome) {
-		int[] returnDestination = new int[2];
-		for (int i=0; i<7; i++) {
-			if (game[i].getText().contains(_TeamHome.replaceAll("%20", " ")) ) {
-				switch (destination[i].getSelectedIndex()) {
-				case 1:
-					returnDestination[0] = 1;
-					returnDestination[1] = 1;
+	public int[][] getSelected() {
+		int[][] returnDestination = new int[6][3];
+		for (int i=0; i<6; i++) {
+			if (!matchselect[i].getSelectedItem().startsWith("-")) {
+				returnDestination[i][0] = matchselect[i].getSelectedIndex()-1;
+
+				switch (i) {
+				case 0:
+					returnDestination[i][1] = 1;
+					returnDestination[i][2] = 1;
 					System.out.println("1.1.");
 					break;
-				case 2:
-					returnDestination[0] = 1;
-					returnDestination[1] = 2;
+				case 1:
+					returnDestination[i][1] = 1;
+					returnDestination[i][2] = 2;
 					System.out.println("1.2.");
 					break;
-				case 3:
-					returnDestination[0] = 2;
-					returnDestination[1] = 1;
+				case 2:
+					returnDestination[i][1] = 2;
+					returnDestination[i][2] = 1;
 					System.out.println("2.1.");
 					break;
-				case 4:
-					returnDestination[0] = 2;
-					returnDestination[1] = 2;
+				case 3:
+					returnDestination[i][1] = 2;
+					returnDestination[i][2] = 2;
 					System.out.println("2.2.");
 					break;
-				case 5:
-					returnDestination[0] = 3;
-					returnDestination[1] = 1;
+				case 4:
+					returnDestination[i][1] = 3;
+					returnDestination[i][2] = 1;
 					System.out.println("3.1.");
 					break;
-				case 6:
-					returnDestination[0] = 3;
-					returnDestination[1] = 2;
+				case 5:
+					returnDestination[i][1] = 3;
+					returnDestination[i][2] = 2;
 					System.out.println("3.2.");
 					break;
 				default:
-					returnDestination[0] = 0;
-					returnDestination[1] = 0;
+					returnDestination[i][1] = 0;
+					returnDestination[i][2] = 0;
 					System.out.println("-");
 					break;
 				}
-				return returnDestination;	
+			} else {
+				returnDestination[i][1] = -1;
+				returnDestination[i][1] = -1;
+				returnDestination[i][2] = -1;
 			}
 		}
-		return null;
+
+		return returnDestination;	
 	}
 
 	/**

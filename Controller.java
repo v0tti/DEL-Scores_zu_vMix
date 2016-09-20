@@ -20,7 +20,7 @@ public class Controller {
 	public Controller() {
 		myModel = new Model();
 		myGUI = new View(this);
-		myGUI.setBounds(100, 100, 500, 650);
+		myGUI.setBounds(100, 100, 350, 400);
 		myGUI.setResizable(false);
 		myGUI.setVisible(true);
 		getData();
@@ -59,11 +59,20 @@ public class Controller {
 
 	public void sendData() {
 		myGUI.setStatus("Daten werden gesendet");
-		for (int i=0; i<timeData.length; i++) {
-			int title[] = myGUI.getDestination(namesData[i][0]);
-			if (title[0]!=0) {
+		int selected[][] = myGUI.getSelected();
+		for (int i=0; i<6; i++) {
+			if (selected[i][0]!=-1 && selected[i][1]!=-1 && selected[i][2]!=-1) {
+				int title[] = new int[2];
+				title[0] = selected[i][1];
+				title[1] = selected[i][2];
+
+				int index = selected[i][0];
+				String scoreHome = scoresData[index][0];
+				String scoreAway = scoresData[index][1];
+				String time = timeData[index];
+				
 				try {
-					makeURL(scoresData[i][0], scoresData[i][1], timeData[i], title);
+					makeURL(scoreHome, scoreAway, time, title);
 				} catch (IOException e) {
 					myGUI.setStatus("Fehler beim senden! (Spiel " + title[0] + "." + title[1]+ ")");
 				}
@@ -87,7 +96,7 @@ public class Controller {
 		myModel.sendToVmix("http://" + vMixIP + "/api/?Function=setText&Input=" + (firstInput
 				+ title[0] - 1) + "&SelectedName=Gast_" + title[1] + "&Value=" + scoreAway);
 		myModel.sendToVmix("http://" + vMixIP + "/api/?Function=setText&Input=" + (firstInput
-				+ title[0] - 1) + "&SelectedName=Zeit_" + title[1] + "&Value=" + time);
+				+ title[0] - 1) + "&SelectedName=Zeit_" + title[1] + "&Value=" + time.replaceAll("\\s", "%20"));
 	}
 
 }
